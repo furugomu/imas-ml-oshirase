@@ -26,8 +26,8 @@ def main
   end
 
   loop do
-    watch()
-    sleep(5*60)
+    watch() if [0, 30].include?(Time.now.min)
+    sleep(60)
   end
 end
 
