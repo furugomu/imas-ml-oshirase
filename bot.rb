@@ -6,11 +6,15 @@ Bundler.require
 require './million_live'
 
 def main
+  $logger = Logger.new(STDOUT)
+  $logger.level = Logger::INFO
+
   $ml = MillionLive.new do |config|
     config.email = ENV['GREE_EMAIL']
     config.password = ENV['GREE_PASSWORD']
     config.cookiepath = nil
   end
+  $ml.log = $logger
 
   $redis = Redis.new(url: ENV['REDISTOGO_URL'] || ENV['REDISCLOUD_URL'])
 
@@ -36,7 +40,6 @@ def watch()
     url = link.href
     # 新しいかタイトルが変わっていたらつぶやく
     old_title = $redis.get(url)
-    puts 'url: %s, title: %s, old_title: %s' % [url, title, old_title]
     next if old_title == title
     $redis.set(url, title)
     tweet(url, title)
@@ -55,7 +58,9 @@ def tweet(url, title)
   text.sub!('「アイドルマスター ミリオンライブ！」をご利用いただき、誠にありがとうございます。', '')
   text.strip!
 
-  $tw.update((title+"\n"+text)[0,maxlength]+"\n"+url)
+  status = (title+"\n"+text)[0,maxlength]+"\n"+url
+  $logger.info(status)
+  $tw.update(status)
 end
 
 if __FILE__ == $0

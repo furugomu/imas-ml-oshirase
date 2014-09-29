@@ -60,6 +60,9 @@ class MillionLive
 
   def login_gree
     log.info('グリーにログインする') if log
+    raise 'メールアドレスが無い' unless @config.email
+    raise 'パスワード' unless @config.password
+
     url = 'https://id.gree.net/login/entry?ignore_sso=1'
 
     # ロギンフォーム
