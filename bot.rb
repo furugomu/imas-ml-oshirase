@@ -2,7 +2,7 @@
 # -*- encoding: UTF-8 -*-
 
 require 'bundler'
-Bundler.require
+Bundler.require :default, :development
 require './million_live'
 
 def main
@@ -12,7 +12,6 @@ def main
   $ml = MillionLive.new do |config|
     config.email = ENV['GREE_EMAIL']
     config.password = ENV['GREE_PASSWORD']
-    config.cookiepath = nil
   end
   $ml.log = $logger
 
@@ -25,13 +24,14 @@ def main
     config.access_token_secret = ENV['TWITTER_ACCESS_TOKEN_SECRET']
   end
 
+  やる()
   loop do
-    watch() if [0, 30].include?(Time.now.min)
+    やる() if [0, 30].include?(Time.now.min)
     sleep(60)
   end
 end
 
-def watch()
+def やる
   page = $ml.get('toppage/information_list')
   links = page.links_with(href: %r(/information/id/))
   # おしらせリンクを探す
